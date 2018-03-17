@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+        <title>Gym-Planner</title>
+
+        <link rel="shortcut icon" type="image/x-icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAcklEQVQ4y92S0QnAMAhEHdK9HCSDOEgHaVLQ5hDb1HxWeOQj3MsFJJpzBhoV5wrJgAdaEeCrbMEjaRS5hw0XkEkU7hCJAmyCDZ6+wCuBN9gW/KiBSyJKc9FaJsDw26mxSWywOjkT+Cp/QTLBDuXh3WAq6BabYzOJG0GVAAAAAElFTkSuQmCC">
+
+        <!-- Bootstrap -->
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Optional theme -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <style>
+            @media print {
+                @page {
+                    size: A4;
+                }
+                html, body {
+                    width: 1024px;
+                }
+                .print-as-pages .page-break-before {
+                    page-break-before: always;
+                    page-break-inside: avoid;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Header -->
+        <div class="page-header text-center hidden-print">
+            <h1>Gym-Planner</h1>
+            <p>gym-plan generator for the 5/3/1 plan by <a href="https://www.t-nation.com/workouts/531-how-to-build-pure-strength">Jim Wendler</a></p>
+        </div>
+        <!-- No-Script -->
+        <noscript>
+            <div class="alert alert-danger">
+                <span><strong>Attention:</strong> JavaScript is not activated. Please enable, to be able to use all features.</span>
+            </div>
+        </noscript>
+        <!-- Content -->
+        <div class="container">
+            <!-- Options -->
+            <div class="panel panel-default hidden-print">
+                <div class="panel-heading">Plan generation</div>
+                <div class="panel-body">
+                    <div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <!-- Scheduling -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Scheduling</div>
+                                    <div class="panel-body">
+                                        <!-- Start-date -->
+                                        <div class="input-group date">
+                                            <span class="input-group-addon">Start-date</span>
+                                            <input type="text" class="form-control" id="scheduling-startdate"/>
+                                            <div class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </div>
+                                        </div>
+                                        <!-- Frequency -->
+                                        <div class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-default active">
+                                                <input type="radio" name="scheduling-frequency" value="3" checked>3 workouts a week
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio" name="scheduling-frequency" value="4">4 workouts a week
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <!-- Lightest bar in gym -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Weight of lightest available bar</div>
+                                    <div class="panel-body">
+                                        <div class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-default active">
+                                                <input type="radio" name="lightestbar-weight" value="10" checked>10 kg
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio" name="lightestbar-weight" value="15">15 kg
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio" name="lightestbar-weight" value="20">20 kg
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <!-- Training max (TM) -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Training max (TM)</div>
+                                    <div class="panel-body">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Value (of 1RM)</span>
+                                            <input type="number" id="tm-input" min="10" max="100" step="5" value="90" class="form-control">
+                                            <span class="input-group-addon">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <!-- Name -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Name</div>
+                                    <div class="panel-body">
+                                        <input type="text" id="name" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <!-- One rep maximum (1RM) -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">One rep maximum (1RM)</div>
+                                    <div class="panel-body">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Standing press</span>
+                                            <input type="number" id="1rm-input-standingpress" min="2.5" step="2.5" value="30" class="form-control">
+                                            <span class="input-group-addon">kg</span>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Deadlift</span>
+                                            <input type="number" id="1rm-input-deadlift" min="2.5" step="2.5" value="50" class="form-control">
+                                            <span class="input-group-addon">kg</span>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Bench press</span>
+                                            <input type="number" id="1rm-input-benchpress" min="2.5" step="2.5" value="30" class="form-control">
+                                            <span class="input-group-addon">kg</span>
+                                        </div>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Parallel squat</span>
+                                            <input type="number" id="1rm-input-parallelsquat" min="2.5" step="2.5" value="50" class="form-control">
+                                            <span class="input-group-addon">kg</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <!-- Assistent exercises program -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">Assistent exercises program</div>
+                                    <div class="panel-body">
+                                        <!-- Program name -->
+                                        <div class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-default active">
+                                                <input type="radio" name="assistent-exercises-program-name" value="janssen" checked>Janssen
+                                            </label>
+                                            <label class="btn btn-default">
+                                                <input type="radio" name="assistent-exercises-program-name" value="bbb">Boring But Big
+                                            </label>
+                                        </div>
+                                        <!-- Program details -->
+                                        <!-- For Janssen plan -->
+                                        <div id="assistent-exercises-program-details-janssen">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">Weighted Crunch</span>
+                                                <input type="number" id="assistent-exercises-program-details-janssen-weightedcrunch" min="0.5" step="0.5" value="5" class="form-control">
+                                                <span class="input-group-addon">kg</span>
+                                            </div>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">One-Arm Row</span>
+                                                <input type="number" id="assistent-exercises-program-details-janssen-onearmrow" min="0.5" step="0.5" value="12" class="form-control">
+                                                <span class="input-group-addon">kg</span>
+                                            </div>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">Lunge</span>
+                                                <input type="number" id="assistent-exercises-program-details-janssen-lunge" min="0.5" step="0.5" value="12" class="form-control">
+                                                <span class="input-group-addon">kg</span>
+                                            </div>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">Leg Press</span>
+                                                <input type="number" id="assistent-exercises-program-details-janssen-legpress" min="0.5" step="0.5" value="40" class="form-control">
+                                                <span class="input-group-addon">kg</span>
+                                            </div>
+                                        </div>
+                                        <!-- For Boring But Big plan -->
+                                        <div id="assistent-exercises-program-details-bbb" style="display:none">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">Intensity</span>
+                                                <input type="number" id="assistent-exercises-program-details-bbb-intensity" min="30" max="70" step="5" value="30" class="form-control">
+                                                <span class="input-group-addon">%</span>
+                                            </div>
+                                            <div class="btn-group" data-toggle="buttons">
+                                                <label class="btn btn-default active">
+                                                    <input type="radio" name="assistent-exercises-program-details-bbb-flipped" value="true" checked>flipped
+                                                </label>
+                                                <label class="btn btn-default">
+                                                    <input type="radio" name="assistent-exercises-program-details-bbb-flipped" value="false">not flipped
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Generate plan button -->
+                    <button type="button" id="generate-plan-button" class="btn btn-success btn-block">
+                        <span class="glyphicon glyphicon-copy"></span>
+                        Generate plan
+                    </button>
+                </div>
+            </div>
+
+            <br>
+
+            <!-- Generated plan -->
+            <div id="generated-plan"></div>
+        </div>
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- Bootstrap Date-Picker Plugin -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.css">
+        <!-- Handlebars.js -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.js"></script>
+
+        <!-- Application Functionality -->
+        <!-- Templates -->
+        <script id="plan-template" type="text/x-handlebars-template">
+            {{#if errors}}
+                <div class="alert alert-danger">
+                    <span class="glyphicon glyphicon-exclamation-sign"></span>
+                    <ul>
+                        {{#each errors}}
+                            <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+            {{else}}
+                <div class="panel panel-primary print-as-pages">
+                    <div class="panel-heading">
+                        Gym-plan
+                        {{#each tags}}
+                            {{generateTags}}
+                        {{/each}}
+                    </div>
+                    <div class="panel-body">
+                        {{#each weeks}}
+                        <div class="panel panel-info {{#unless @first}}page-break-before{{/unless}}">
+                            <div class="panel-heading">
+                                Week {{inc @index}}
+                                {{#each tags}}
+                                    {{generateTags}}
+                                {{/each}}
+                            </div>
+                            <div class="panel-body">
+                                {{#each workouts}}
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        Workout {{inc @index}}
+                                        {{#each tags}}
+                                            {{generateTags}}
+                                        {{/each}}
+                                    </div>
+                                    <div class="panel-body">
+                                        <table class="table">
+                                            <colgroup>
+                                                <col span="1" class="col-sm-4">
+                                                <col span="1" class="col-sm-8">
+                                            </colgroup>
+                                            <tbody>
+                                                {{#each exercises}}
+                                                    {{generateExercise}}
+                                                {{/each}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+            {{/if}}
+        </script>
+        <script>
+            function init() {
+                Date.prototype.addDays = function(days) {
+                    var dat = new Date(this.valueOf());
+                    dat.setDate(dat.getDate() + days);
+                    return dat;
+                };
+
+                Handlebars.registerHelper("inc", function(value) {
+                    return parseInt(value) + 1;
+                });
+
+                Handlebars.registerHelper("generateTags", function() {
+                    var out = "";
+                    out += "<span class='label label-info'>";
+                    if ("icon" in this) {
+                        out += "<span class='" + Handlebars.escapeExpression(this.icon) + "'></span>" + " ";
+                    }
+                    out += Handlebars.escapeExpression(this.text);
+                    out += "</span>";
+                    return new Handlebars.SafeString(out);
+                });
+
+                Handlebars.registerHelper("generateExercise", function() {
+                    var out = "";
+                    var name = Handlebars.escapeExpression(this.name);
+                    if ("steps" in this && this.steps.length > 0) {
+                        out += "<tr>";
+                        out += "<td" + (this.steps.length > 1 ? " rowspan='" + this.steps.length + "'" : "") + ">";
+                        out += name;
+                        out += "</td>";
+                        out += "<td>";
+                        var firstStepSets = "sets" in this.steps[0] ? (Handlebars.escapeExpression(this.steps[0].sets) + " sets") : "";
+                        var firstStepReps = Handlebars.escapeExpression(this.steps[0].reps) + " reps";
+                        var firstStepWeight = "weight" in this.steps[0] ? Handlebars.escapeExpression(this.steps[0].weight) : "";
+                        out += firstStepSets ? "<span class='label label-default'>" + firstStepSets + "</span> of " : "";
+                        out += "<span class='label label-default'>" + firstStepReps + "</span>";
+                        out += firstStepWeight ? " with <span class='label label-default'>" + firstStepWeight + "</span>" : "";
+                        out += "</td>";
+                        out += "</tr>";
+                        for(var i = 1; i < this.steps.length; i++) {
+                            out += "<tr>";
+                            out += "<td>";
+                            var currentStepSets = "sets" in this.steps[i] ? (Handlebars.escapeExpression(this.steps[i].sets) + " sets") : "";
+                            var currentStepReps = Handlebars.escapeExpression(this.steps[i].reps) + " reps";
+                            var currentStepWeight = "weight" in this.steps[i] ? Handlebars.escapeExpression(this.steps[i].weight) : "";
+                            out += currentStepSets ? "<span class='label label-default'>" + currentStepSets + "</span> of " : "";
+                            out += "<span class='label label-default'>" + currentStepReps + "</span>";
+                            out += currentStepWeight ? " with <span class='label label-default'>" + currentStepWeight + "</span>" : "";
+                            out += "</td>";
+                            out += "</tr>";
+                        }
+                    } else {
+                        out += "<tr>";
+                        out += "<td>" + name + "</td>";
+                        out += "<td>" + "" + "</td>";
+                        out += "</tr>";
+                    }
+                    return new Handlebars.SafeString(out);
+                });
+
+                var planTemplate = Handlebars.compile($("#plan-template").html());
+
+                $("#generate-plan-button").click(function () {
+                    var userInput = getUserInput();
+                    var generatedPlanHtml = generatePlan(userInput, planTemplate);
+                    var generatedPlanSelector = "#generated-plan";
+                    $(generatedPlanSelector).hide().html(generatedPlanHtml).fadeIn();
+                    $("html, body").animate({
+                        scrollTop: $(generatedPlanSelector).offset().top
+                    });
+                });
+
+                var schedulingStartdateSelector = "#scheduling-startdate";
+                $(schedulingStartdateSelector).datepicker({
+                    autoclose: true,
+                    calendarWeeks: true,
+                    daysOfWeekDisabled: [0,4,5,6],
+                    daysOfWeekHighlighted: [1,2,3],
+                    format: "dd-M-yyyy",
+                    startDate: "today",
+                    weekStart: 1,
+                    todayHighlight: true,
+                    maxViewMode: "years"
+                });
+                var lowestAllowedDate = new Date();
+                var lowestAllowedDateDay = lowestAllowedDate.getDay();
+                if (lowestAllowedDateDay < 1) {
+                    lowestAllowedDate = lowestAllowedDate.addDays(1);
+                } else if (lowestAllowedDateDay > 3) {
+                    lowestAllowedDate = lowestAllowedDate.addDays(6 - lowestAllowedDateDay + 2);
+                }
+                lowestAllowedDate.setHours(0, 0, 0, 0);
+                $(schedulingStartdateSelector).datepicker("setDate", lowestAllowedDate);
+
+                $("input[type=radio][name=assistent-exercises-program-name]").change(function() {
+                    if (this.value == "janssen") {
+                        $("#assistent-exercises-program-details-janssen").show();
+                        $("#assistent-exercises-program-details-bbb").hide();
+                    } else {
+                        $("#assistent-exercises-program-details-janssen").hide();
+                        $("#assistent-exercises-program-details-bbb").show();
+                    }
+                });
+            }
+
+            function getUserInput() {
+                var userInput = {};
+                userInput.errors = [];
+
+                var standingpress1RM = process1RMInput("Standing press", "standingpress", userInput);
+                var deadlift1RM = process1RMInput("Deadlift", "deadlift", userInput);
+                var benchpress1RM =  process1RMInput("Bench press", "benchpress", userInput);
+                var parallelsquat1RM = process1RMInput("Parallel squat", "parallelsquat", userInput);
+
+                var trainingMax = parseFloat($("#tm-input").val());
+                if (isNaN(trainingMax) || trainingMax < 10 || trainingMax > 100 || trainingMax % 5 != 0) {
+                    userInput.errors.push("Training max value invalid: must be between 10 and 100% and a multiple of 5%!");
+                } else {
+                    userInput.trainingMax = trainingMax / 100;
+                }
+
+                var lightestBarWeight = parseInt($("input[type=radio][name=lightestbar-weight]:checked").val());
+                if (isNaN(lightestBarWeight) || (lightestBarWeight != 10 && lightestBarWeight != 15 && lightestBarWeight != 20)) {
+                    userInput.errors.push("Lightest bar weight is invalid: must be 10, 15 or 20 kg!");
+                } else {
+                    userInput.lightestBarWeight = lightestBarWeight;
+                }
+
+                var startDate = $("#scheduling-startdate").datepicker("getUTCDate");
+                if (!startDate || startDate.getDay() < 1 || startDate.getDay() > 3 || startDate < (new Date().setHours(0,0,0,0))) {
+                    userInput.errors.push("Start-date is invalid: must be a Monday, Tuesday or Wednesday and can't be a past date!");
+                } else {
+                    userInput.startDate = startDate.toJSON();
+                }
+
+                var trainingsPerWeek = parseInt($("input[type=radio][name=scheduling-frequency]:checked").val());
+                if (isNaN(trainingsPerWeek) || (trainingsPerWeek != 3 && trainingsPerWeek != 4)) {
+                    userInput.errors.push("Trainings per week is invalid: must be 3 or 4!");
+                } else {
+                    userInput.trainingsPerWeek = trainingsPerWeek;
+                }
+
+                var assistentExercisesProgramName = $("input[type=radio][name=assistent-exercises-program-name]:checked").val();
+                if (assistentExercisesProgramName != "janssen" && assistentExercisesProgramName != "bbb") {
+                    userInput.errors.push("Assistent exercises program invalid: must be Janssen or Boring But Big!");
+                } else {
+                    userInput.assistentExercisesProgram = {};
+                    userInput.assistentExercisesProgram.name = assistentExercisesProgramName;
+                    userInput.assistentExercisesProgram.details = {};
+                    if (assistentExercisesProgramName == "janssen") {
+                        processJanssenDetailsInput("Weighted Crunch", "weightedcrunch", userInput);
+                        processJanssenDetailsInput("One-Arm Row", "onearmrow", userInput);
+                        processJanssenDetailsInput("Lunge", "lunge", userInput);
+                        processJanssenDetailsInput("Leg Press", "legpress", userInput);
+                    } else {
+                        var intensity = parseInt($("#assistent-exercises-program-details-bbb-intensity").val());
+                        if (isNaN(intensity) || intensity < 30 || intensity > 70 || intensity % 5 != 0) {
+                            userInput.errors.push("Assistent exercises program detail invalid: Intensity value must be between 30 and 70% and a multiple of 5%!");
+                        } else {
+                            userInput.assistentExercisesProgram.details.intensity = intensity / 100;
+                        }
+                        var flipped = $("input[type=radio][name=assistent-exercises-program-details-bbb-flipped]:checked").val();
+                        if (!flipped || (flipped != "true" && flipped != "false")) {
+                            userInput.errors.push("Assistent exercises program detail invalid: Flipped/Not flipped not set correctly!");
+                        } else {
+                            userInput.assistentExercisesProgram.details.flipped = (flipped === "true");
+                        }
+                    }
+                }
+
+                // name is optional
+                var name = $("#name").val();
+                if(!name) {
+                    name = "";
+                } else {
+                    name = name.trim();
+                }
+                userInput.name = name;
+
+                if (userInput.errors.length < 1) {
+                    delete userInput.errors;
+                } else {
+                    temp = userInput.errors;
+                    userInput = {};
+                    userInput.errors = temp;
+                }
+
+                return userInput;
+            }
+
+            function process1RMInput(/*String*/name, /*String*/selectorPart, userInput) {
+                var value = parseFloat($("#1rm-input-" + selectorPart).val());
+                if (isNaN(value) || value < 2.5 || value % 2.5 != 0) {
+                    userInput.errors.push(name + " 1RM value invalid: must be minimum 2.5 and a multiple of 2.5!");
+                    return null;
+                } else {
+                    if(!("oneRepMaxValues" in userInput)) {
+                        userInput.oneRepMaxValues = {};
+                    }
+                    userInput.oneRepMaxValues[name] = value;
+
+                    return value;
+                }
+            }
+
+            function processJanssenDetailsInput(/*String*/name, /*String*/selectorPart, userInput) {
+                var value = parseFloat($("#assistent-exercises-program-details-janssen-" + selectorPart).val());
+                if (isNaN(value) || value < 0.5 || value % 0.5 != 0) {
+                    userInput.errors.push("Assistent exercises program detail invalid: " + name + " value must be minimum 0.5 and a multiple of 0.5!");
+                } else {
+                    userInput.assistentExercisesProgram.details[name] = value;
+                }
+            }
+
+            function generatePlan(userInput, planTemplate) {
+                if ("errors" in userInput) {
+                    return planTemplate({
+                        "errors": userInput.errors
+                    });
+                }
+                var workouts = [];
+                // add main-lifts
+                var wendlerPlan = getWendlerPlan();
+                wendlerPlan.weeks.forEach(function(week) {
+                    $.each(userInput.oneRepMaxValues, function(name, value) {
+                        var exercise = {};
+                        exercise.name = name;
+                        exercise.steps = [];
+                        week.sets.forEach(function(set) {
+                            exercise.steps.push({
+                                "reps": userInput.assistentExercisesProgram.name == "bbb" ? set.reps.replace("+", "").replace(" ", "") : set.reps,
+                                "weight": correctWeight(value * userInput.trainingMax * set.intensity) + " kg"
+                            });
+                        });
+                        var exercises = [];
+                        exercises.push(exercise);
+                        workouts.push({
+                            "exercises": exercises
+                        });
+                    });
+                });
+                // add assistent exercises
+                if (userInput.assistentExercisesProgram.name == "janssen") {
+                    var assistentExercisesPlan = getJanssenAssistentExercisesPlan();
+                    workouts.forEach(function(workout) {
+                        assistentExercisesPlan[workout.exercises[0].name].forEach(function(assistentExercise) {
+                            var exercise = {};
+                            exercise.name = assistentExercise.name;
+                            exercise.steps = [];
+                            var step = {};
+                            step.sets = assistentExercise.sets;
+                            step.reps = assistentExercise.reps;
+                            if (exercise.name in userInput.assistentExercisesProgram.details) {
+                                step.weight = userInput.assistentExercisesProgram.details[exercise.name] + " kg";
+                            }
+                            exercise.steps.push(step);
+                            workout.exercises.push(exercise);
+                        });
+                    });
+                } else {
+                    var assistentExercisesPlan = getBBBAssistentExercisesPlan(userInput.assistentExercisesProgram.details.flipped);
+                    workouts.forEach(function(workout) {
+                        assistentExercisesPlan[workout.exercises[0].name].forEach(function(assistentExercise) {
+                            var exercise = {};
+                            exercise.name = assistentExercise.name;
+                            exercise.steps = [];
+                            var step = {};
+                            step.sets = assistentExercise.sets;
+                            step.reps = assistentExercise.reps;
+                            if (exercise.name in userInput.oneRepMaxValues) {
+                                step.weight = correctWeight(userInput.oneRepMaxValues[exercise.name] * userInput.trainingMax * userInput.assistentExercisesProgram.details.intensity) + " kg";
+                            }
+                            exercise.steps.push(step);
+                            workout.exercises.push(exercise);
+                        });
+                    });
+                }
+                // ensure that weight of each step is not smaller than weight of lightest available bar
+                var StepWeightTooSmall = {};
+                try {
+                    workouts.forEach(function(workout) {
+                        workout.exercises.forEach(function(exercise) {
+                            if (exercise.name in userInput.oneRepMaxValues) {
+                                exercise.steps.forEach(function(step) {
+                                    var stepWeight = parseFloat(step.weight.replace(" ", "").replace("kg", ""));
+                                    if (stepWeight < userInput.lightestBarWeight) {
+                                        StepWeightTooSmall.value = stepWeight;
+                                        throw StepWeightTooSmall;
+                                    }
+                                });
+                            }
+                        });
+                    });
+                } catch (e) {
+                    if (e !== StepWeightTooSmall) {
+                        throw e;
+                    }
+                    return planTemplate({
+                        "errors": [
+                            "Weight of at least one exercise step in generated plan is smaller (" + StepWeightTooSmall.value +
+                            " kg) than the stated weight of the lightest available bar (" + userInput.lightestBarWeight +
+                            " kg) and so, training would not be possible. Please increase entered 1RM values" +
+                            (
+                                userInput.lightestBarWeight > 10 ? " or decrease stated weight of lightest available bar" : ""
+                            ) +
+                            (
+                                userInput.assistentExercisesProgram.name == "bbb" && userInput.assistentExercisesProgram.details.intensity < 0.7 ?
+                                    " or increase entered intensity value for the Boring But Big assistent exercises program" : ""
+                            ) +
+                            "!"
+                        ]
+                    });
+                }
+                // create plan from above workouts
+                var planContext = {};
+                planContext.tags = [
+                    {
+                        "icon": "glyphicon glyphicon-calendar",
+                        "text": "starting with " + formatDate(new Date(userInput.startDate))
+                    },
+                    {
+                        "text": userInput.trainingsPerWeek + " workouts a week"
+                    },
+                    {
+                        "text": (userInput.trainingMax * 100) + "% Training max"
+                    },
+                    {
+                        "text": (userInput.oneRepMaxValues["Standing press"]) + "kg Standing press 1RM"
+                    },
+                    {
+                        "text": (userInput.oneRepMaxValues["Deadlift"]) + "kg Deadlift 1RM"
+                    },
+                    {
+                        "text": (userInput.oneRepMaxValues["Bench press"]) + "kg Bench press 1RM"
+                    },
+                    {
+                        "text": (userInput.oneRepMaxValues["Parallel squat"]) + "kg Parallel squat 1RM"
+                    },
+                    {
+                        "text": (userInput.assistentExercisesProgram.name == "janssen" ?
+                            "Janssen"
+                            :
+                            "Boring But Big with " + (userInput.assistentExercisesProgram.details.intensity * 100) + "% intensity") + " assistent exercises program"
+                    }
+                ];
+                if (userInput.name != "") {
+                    planContext.tags.unshift({
+                        "icon": "glyphicon glyphicon-user",
+                        "text": userInput.name
+                    })
+                }
+                planContext.weeks = [];
+                var currentWeek = 1;
+                var currentWeekStartdate = new Date(userInput.startDate);
+                var addedWorkouts = 0;
+                workouts.forEach(function(workout) {
+                    if (planContext.weeks.length < currentWeek) {
+                        planContext.weeks.push({
+                            "tags": [], // currently not used
+                            "workouts": []
+                        });
+                    }
+                    // add exercises
+                    planContext.weeks[currentWeek - 1].workouts.push(workout);
+                    // add tags
+                    planContext.weeks[currentWeek - 1].workouts[addedWorkouts].tags = [];
+                    // add tag: date
+                    var d;
+                    if (userInput.trainingsPerWeek == 3) {
+                        switch(addedWorkouts + 1) {
+                            case 1:
+                                d = currentWeekStartdate;
+                                break;
+                            case 2:
+                                d = currentWeekStartdate.addDays(2);
+                                break;
+                            case 3:
+                                d = currentWeekStartdate.addDays(4);
+                                break;
+                        }
+                    } else {
+                        switch(addedWorkouts + 1) {
+                            case 1:
+                                d = currentWeekStartdate;
+                                break;
+                            case 2:
+                                d = currentWeekStartdate.addDays(1);
+                                break;
+                            case 3:
+                                d = currentWeekStartdate.addDays(3);
+                                break;
+                            case 4:
+                                d = currentWeekStartdate.addDays(4);
+                                break;
+                        }
+                    }
+                    planContext.weeks[currentWeek - 1].workouts[addedWorkouts].tags.push({
+                        "icon": "glyphicon glyphicon-calendar",
+                        "text": formatDate(d)
+                    });
+                    // update loop-logic
+                    addedWorkouts++;
+                    if (addedWorkouts >= userInput.trainingsPerWeek) {
+                        currentWeek++;
+                        currentWeekStartdate = currentWeekStartdate.addDays(7);
+                        addedWorkouts = 0;
+                    }
+                });
+                return planTemplate(planContext);
+            }
+
+            function correctWeight(/*Number*/value) {
+                return Math.floor(value / 2.5) * 2.5;
+            }
+
+            function formatDate(/*Date*/d) {
+                //var dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+                var dayNamesAbbreviated = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                //var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                var monthNamesAbbreviated = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
+                return dayNamesAbbreviated[d.getDay()] + ", " + d.getDate() + "-" + monthNamesAbbreviated[d.getMonth()] + " " + d.getFullYear();
+            }
+
+            function getWendlerPlan() {
+                return {
+                    "weeks": [
+                        {
+                            "name": "3 x 5",
+                            "sets": [
+                                {
+                                    "intensity": 0.65,
+                                    "reps": "5"
+                                },
+                                {
+                                    "intensity": 0.75,
+                                    "reps": "5"
+                                },
+                                {
+                                    "intensity": 0.85,
+                                    "reps": "5 +"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "3 x 3",
+                            "sets": [
+                                {
+                                    "intensity": 0.70,
+                                    "reps": "3"
+                                },
+                                {
+                                    "intensity": 0.80,
+                                    "reps": "3"
+                                },
+                                {
+                                    "intensity": 0.90,
+                                    "reps": "3 +"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "3 x 5, 3, 1",
+                            "sets": [
+                                {
+                                    "intensity": 0.75,
+                                    "reps": "5"
+                                },
+                                {
+                                    "intensity": 0.85,
+                                    "reps": "3"
+                                },
+                                {
+                                    "intensity": 0.95,
+                                    "reps": "1 +"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Deload",
+                            "sets": [
+                                {
+                                    "intensity": 0.40,
+                                    "reps": "5"
+                                },
+                                {
+                                    "intensity": 0.50,
+                                    "reps": "5"
+                                },
+                                {
+                                    "intensity": 0.60,
+                                    "reps": "5"
+                                }
+                            ]
+                        }
+                    ]
+                };
+            }
+
+            function getJanssenAssistentExercisesPlan() {
+                return {
+                    "Standing press": [
+                        {
+                            "name": "Chin-Up",
+                            "sets": "5",
+                            "reps": "10 - 12"
+                        },
+                        {
+                            "name": "V-Up",
+                            "sets": "5",
+                            "reps": "15"
+                        },
+                        {
+                            "name": "Hyperextension",
+                            "sets": "3",
+                            "reps": "8 - 10"
+                        }
+                    ],
+                    "Deadlift": [
+                        {
+                            "name": "Weighted Crunch",
+                            "sets": "5",
+                            "reps": "10 - 15"
+                        },
+                        {
+                            "name": "Hanging Leg Raise",
+                            "sets": "5",
+                            "reps": "10"
+                        },
+                        {
+                            "name": "Plank",
+                            "sets": "3",
+                            "reps": "1 min"
+                        }
+                    ],
+                    "Bench press": [
+                        {
+                            "name": "One-Arm Row",
+                            "sets": "5",
+                            "reps": "10 - 12"
+                        },
+                        {
+                            "name": "Hyperextension",
+                            "sets": "3",
+                            "reps": "8 - 10"
+                        },
+                        {
+                            "name": "Lunge",
+                            "sets": "3",
+                            "reps": "20"
+                        }
+                    ],
+                    "Parallel squat": [
+                        {
+                            "name": "Leg Press",
+                            "sets": "5",
+                            "reps": "12"
+                        },
+                        {
+                            "name": "Dip",
+                            "sets": "5",
+                            "reps": "10 - 12"
+                        },
+                        {
+                            "name": "Glute Ham Raise",
+                            "sets": "5",
+                            "reps": "10"
+                        }
+                    ]
+                }
+            }
+
+            function getBBBAssistentExercisesPlan(/*Boolean*/flipped) {
+                return {
+                    "Standing press": [
+                        {
+                            "name": flipped ? "Bench press" : "Standing press",
+                            "sets": "5",
+                            "reps": "10"
+                        },
+                        {
+                            "name": "Chin-Up",
+                            "sets": "5",
+                            "reps": "10"
+                        }
+                    ],
+                    "Deadlift": [
+                        {
+                            "name": flipped ? "Parallel squat" : "Deadlift",
+                            "sets": "5",
+                            "reps": "10"
+                        },
+                        {
+                            "name": "Weighted Crunch",
+                            "sets": "5",
+                            "reps": "10"
+                        }
+                    ],
+                    "Bench press": [
+                        {
+                            "name": flipped ? "Standing press" : "Bench press",
+                            "sets": "5",
+                            "reps": "10"
+                        },
+                        {
+                            "name": "One-Arm Row",
+                            "sets": "5",
+                            "reps": "10"
+                        }
+                    ],
+                    "Parallel squat": [
+                        {
+                            "name": flipped ? "Deadlift" : "Parallel squat",
+                            "sets": "5",
+                            "reps": "10"
+                        },
+                        {
+                            "name": "Hanging Leg Raise",
+                            "sets": "5",
+                            "reps": "10"
+                        }
+                    ]
+                }
+            }
+        </script>
+        <script>
+            $(document).ready(function() {
+                init();
+            });
+        </script>
+    </body>
+</html>
